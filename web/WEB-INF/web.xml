@@ -8,7 +8,7 @@
 		<servlet-class>com.vaadin.server.VaadinServlet</servlet-class>
 		<init-param>
 			<param-name>UI</param-name>
-			<param-value>experimental.MainUI</param-value>
+			<param-value>experimental.sample.MainUI</param-value>
 		</init-param>
 	</servlet>
 	<servlet-mapping>

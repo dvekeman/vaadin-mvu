@@ -1,15 +1,18 @@
-package experimental;
+package experimental.sample;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 import com.vaadin.data.Binder;
-import com.vaadin.data.ValidationResult;
-import com.vaadin.data.Validator;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
+
+import experimental.IntegerValidator;
+import experimental.support.Action;
+import experimental.support.ModelViewBinder;
 
 class PlusXLayout {
 
@@ -48,36 +51,28 @@ class PlusXLayout {
 	}
 
 	static Component view(Consumer<Action> mainUpdater) {
-		return view(mainUpdater, Model.builder().build());
+		Model initialModel = Model.builder()
+				.build();
+		return ModelViewBinder.view(mainUpdater, initialModel, PlusXLayout::view, PlusXLayout::update);
 	}
 
 
-	private static Component view(Consumer<Action> mainUpdater, Binder<Model> binder, Consumer<Action> updater) {
+	private static Component view(Binder<Model> binder, List<Consumer<Action>> updaters) {
 		HorizontalLayout layout = new HorizontalLayout();
 
 		TextField increment = new TextField();
 		binder.forField(increment)
-				.withValidator((Validator<String>) (s, valueContext) -> {
-					try {
-						if(s == null || s.isEmpty()){
-							return ValidationResult.ok();
-						}
-						Integer.valueOf(s);
-						return ValidationResult.ok();
-					} catch (NumberFormatException nfe) {
-						return ValidationResult.error(String.format("Cannot convert %s into an integer", s));
-					} catch (Exception e) {
-						return ValidationResult.error("Unknown exception converting your input");
-					}
-				})
-				.bind((ValueProvider<Model, String>) model -> Integer.toString(model.increment), (model, s) -> {
-					updater.accept(new SetIncrement(Integer.valueOf(s)));
-				});
+				.withValidator(new IntegerValidator())
+				.bind((ValueProvider<Model, String>) model ->
+						Integer.toString(model.increment), (model, s) ->
+						updaters.forEach(updater ->
+								updater.accept(new SetIncrement(Integer.valueOf(s)))));
 		layout.addComponent(increment);
 
 		Button plus = new Button(" + ");
 		plus.addClickListener(clickEvent ->
-				mainUpdater.accept(new Main.PlusXAction(binder.getBean().increment))
+				updaters.forEach(updater ->
+						updater.accept(new Main.PlusXAction(binder.getBean().increment)))
 		);
 		plus.addStyleName("btn-mono");
 		layout.addComponent(plus);
@@ -103,20 +98,5 @@ class PlusXLayout {
 		}
 	}
 
-
-	// BOILERPLATE / HELPER
-	// These methods could be moved somewhere else to make the code less boilerplate-y
-
-	private static Component view(Consumer<Action> mainUpdater, Model model) {
-		Binder<Model> binder = new Binder<>();
-		binder.setBean(model);
-
-		return view(mainUpdater, binder, action -> {
-			Model oldModel = binder.getBean();
-			// This is the important part: update creates a new MainModel and rebinds it.
-			Model newModel = update(oldModel, action);
-			binder.setBean(newModel);
-		});
-	}
 
 }

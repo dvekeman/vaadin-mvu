@@ -1,5 +1,5 @@
-package experimental;
+package experimental.support;
 
 // Actions or Messages
 // Why no enum? Because some actions might carry custom data (e.g. PlusXAction)
-interface Action {}
+public interface Action {}

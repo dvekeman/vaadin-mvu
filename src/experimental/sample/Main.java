@@ -1,4 +1,4 @@
-package experimental;
+package experimental.sample;
 
 import java.util.function.Consumer;
 
@@ -13,11 +13,11 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
+import experimental.support.Action;
+import experimental.support.ModelViewBinder;
+
 /**
- *
  * [ ] External API calls (e.g. a REST call)
- *
- *
  */
 class Main {
 
@@ -61,7 +61,8 @@ class Main {
 	// VIEW
 	// This initial view
 	static Component view() {
-		return view(MainModel.builder().build());
+		MainModel initialModel = MainModel.builder().build();
+		return ModelViewBinder.view(initialModel, Main::view, Main::update);
 	}
 
 	private static Component view(Binder<MainModel> binder, Consumer<Action> updater) {
@@ -102,16 +103,21 @@ class Main {
 	}
 
 	private static class PlusAction implements Action {}
+
 	private static class MinusAction implements Action {}
-	static class PlusXAction implements Action{
+
+	static class PlusXAction implements Action {
 		final int increment;
-		PlusXAction(int increment){
+
+		PlusXAction(int increment) {
 			this.increment = increment;
 		}
 	}
-	static class MinusXAction implements Action{
+
+	static class MinusXAction implements Action {
 		final int decrement;
-		MinusXAction(int decrement){
+
+		MinusXAction(int decrement) {
 			this.decrement = decrement;
 		}
 	}
@@ -126,12 +132,12 @@ class Main {
 					.withTicker(oldModel.ticker - 1)
 			);
 		} else if (action instanceof PlusXAction) {
-			int increment = ((PlusXAction)action).increment;
+			int increment = ((PlusXAction) action).increment;
 			return MainModel.copy(oldModel.builder
 					.withTicker(oldModel.ticker + increment)
 			);
 		} else if (action instanceof MinusXAction) {
-			int decrement = ((MinusXAction)action).decrement;
+			int decrement = ((MinusXAction) action).decrement;
 			return MainModel.copy(oldModel.builder
 					.withTicker(oldModel.ticker - decrement)
 			);
@@ -139,20 +145,4 @@ class Main {
 			throw new RuntimeException(String.format("Action %s is not yet implemented!", action));
 		}
 	}
-
-	// BOILERPLATE / HELPER
-	// These methods could be moved somewhere else to make the code less boilerplate-y
-
-	private static Component view(MainModel model) {
-		Binder<MainModel> binder = new Binder<>();
-		binder.setBean(model);
-
-		return view(binder, action -> {
-			MainModel oldModel = binder.getBean();
-			// This is the important part: update creates a new MainModel and rebinds it.
-			MainModel newModel = update(oldModel, action);
-			binder.setBean(newModel);
-		});
-	}
-
 }

@@ -1,4 +1,4 @@
-package experimental;
+package experimental.sample;
 
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.*;
