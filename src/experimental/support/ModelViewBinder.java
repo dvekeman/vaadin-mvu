@@ -8,6 +8,25 @@ import java.util.function.Consumer;
 import com.vaadin.data.Binder;
 import com.vaadin.ui.Component;
 
+/**
+ * The <code>ModelViewBinder</code> is the engine of the Model-View-Update pattern.
+ *
+ * The bindModelAndView functions take, as arguments, ... the pattern!
+ *
+ * <ul>
+ *     <li>
+ *          A model class (which is a data class)
+ *     </li>
+ *     <li>
+ *          A view function (which renders the model)
+ *     </li>
+ *     <li>
+ *          An update function which acts on Actions, produces a new MODEL and - eventually - causes the view to update
+ *     </li>
+ * </ul>
+ *
+ *
+ */
 public class ModelViewBinder {
 
 	/**
