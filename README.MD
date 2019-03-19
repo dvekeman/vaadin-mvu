@@ -4,6 +4,8 @@ This guide describes how to use the Model-View-Update pattern for Vaadin applica
 
 *Warning*: it is very opinionated and it's based on The Elm Architecture (TEA) which also influenced the Redux framework.
 
+*Status*: Alpha | Experimental!
+
 ## Introduction
 
 *Goals*
