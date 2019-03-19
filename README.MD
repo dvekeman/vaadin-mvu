@@ -1,4 +1,4 @@
-# Vaadin MVU
+# Model View Update (MVU) for Vaadin
 
 This guide describes how to use the Model-View-Update pattern for Vaadin applications.
 
@@ -252,3 +252,7 @@ This is very incomplete and a few emerging questions are
 - How to deal with bigger, more complex models
 - How to deal with backend calls (REST, database, ...)
 - Add support for more Vaadin components besides labels, textfields and buttons
+
+## License
+
+There is obviously no LICENSE for the pattern. If you like or use it, drop me a note or star!
