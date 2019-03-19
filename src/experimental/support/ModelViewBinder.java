@@ -1,10 +1,10 @@
 package experimental.support;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
-import com.google.gwt.thirdparty.guava.common.collect.Lists;
 import com.vaadin.data.Binder;
 import com.vaadin.ui.Component;
 
@@ -78,18 +78,18 @@ public class ModelViewBinder {
 			Consumer<Action> parentDispatcher,
 			/* MODEL  */ MODEL model,
 			/* VIEW   */ BiFunction<Binder<MODEL>, List<Consumer<Action>>, Component> view,
-			/* UPDATE */ BiFunction<MODEL, Action, MODEL> update) {
+			/* UPDATE */ BiFunction<Action, MODEL, MODEL> update) {
 
 		Binder<MODEL> binder = new Binder<>();
 		binder.setBean(model);
 
-		List<Consumer<Action>> updaters = Lists.newArrayList();
+		List<Consumer<Action>> updaters = new ArrayList<>();
 		updaters.add(parentDispatcher);
 		updaters.add(
 				action -> {
 					MODEL oldModel = binder.getBean();
 					// This is the important part: update creates a new MainModel and rebinds it.
-					MODEL newModel = update.apply(oldModel, action);
+					MODEL newModel = update.apply(action, oldModel);
 					binder.setBean(newModel);
 				}
 		);
@@ -112,7 +112,7 @@ public class ModelViewBinder {
 	public static <MODEL> Component bindModelAndView(
 			/* MODEL  */ MODEL model,
 			/* VIEW   */ BiFunction<Binder<MODEL>, Consumer<Action>, Component> view,
-			/* UPDATE */ BiFunction<MODEL, Action, MODEL> update) {
+			/* UPDATE */ BiFunction<Action, MODEL, MODEL> update) {
 
 		Binder<MODEL> binder = new Binder<>();
 		binder.setBean(model);
@@ -120,7 +120,7 @@ public class ModelViewBinder {
 		return view.apply(binder, action -> {
 			MODEL oldModel = binder.getBean();
 			// This is the important part: update creates a new MainModel and rebinds it.
-			MODEL newModel = update.apply(oldModel, action);
+			MODEL newModel = update.apply(action, oldModel);
 			binder.setBean(newModel);
 		});
 	}

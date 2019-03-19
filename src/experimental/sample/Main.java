@@ -3,6 +3,7 @@ package experimental.sample;
 import java.util.function.Consumer;
 
 import com.vaadin.data.Binder;
+import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -12,7 +13,9 @@ import com.vaadin.ui.VerticalLayout;
 
 import experimental.support.Action;
 import experimental.support.ModelViewBinder;
+import experimental.support.SingletonDispatcher;
 import experimental.support.extra.BoundLabel;
+import experimental.support.extra.DispatchButton;
 
 class Main {
 
@@ -60,7 +63,7 @@ class Main {
 		return ModelViewBinder.bindModelAndView(initialModel, Main::view, Main::update);
 	}
 
-	private static Component view(Binder<MainModel> binder, Consumer<Action> updater) {
+	private static Component view(Binder<MainModel> binder, Consumer<Action> dispatcher) {
 		HorizontalLayout layout = new HorizontalLayout();
 		layout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 
@@ -69,27 +72,33 @@ class Main {
 				.withValueProcessor(Object::toString)
 				.withValueProvider(model -> model.ticker)
 				.withEmptyValue(0)
+				.forLabel(label -> label.setWidth(50, Sizeable.Unit.PIXELS))
 				.build();
-		layout.addComponent(tickerLabel);
+
+		Button plus = DispatchButton.builder(SingletonDispatcher.wrap(dispatcher))
+				.withCaption("+")
+				.withAction(PlusAction::new)
+				.forButton(button -> button.addStyleName("btn-mono"))
+				.forButton(button -> button.setWidth(50, Sizeable.Unit.PIXELS))
+				.build();
+
+		Button minus = DispatchButton.builder(SingletonDispatcher.wrap(dispatcher))
+				.withCaption("-")
+				.withAction(MinusAction::new)
+				.forButton(button -> button.addStyleName("btn-mono"))
+				.forButton(button -> button.setWidth(50, Sizeable.Unit.PIXELS))
+				.build();
 
 		// the button ( + <x> ) (+) (-) and ( - <x> )
 		VerticalLayout buttonLayout = new VerticalLayout();
+		buttonLayout.addComponent(PlusX.view(dispatcher));
+		buttonLayout.addComponent(plus);
+		buttonLayout.setComponentAlignment(plus, Alignment.MIDDLE_RIGHT);
+		buttonLayout.addComponent(minus);
+		buttonLayout.setComponentAlignment(minus, Alignment.MIDDLE_RIGHT);
+		buttonLayout.addComponent(MinusX.view(dispatcher));
 
-		buttonLayout.addComponent(PlusXLayout.view(updater));
-
-		Button plus = new Button(" + ");
-		plus.addClickListener(clickEvent ->
-				updater.accept(new PlusAction()));
-		plus.addStyleName("btn-mono");
-
-		Button minus = new Button(" - ");
-		minus.addClickListener(clickEvent ->
-				updater.accept(new MinusAction()));
-		minus.addStyleName("btn-mono");
-		buttonLayout.addComponents(plus, minus);
-
-		buttonLayout.addComponent(MinusXLayout.view(updater));
-
+		layout.addComponent(tickerLabel);
 		layout.addComponent(buttonLayout);
 
 		return layout;
@@ -116,7 +125,7 @@ class Main {
 		}
 	}
 
-	private static MainModel update(MainModel oldModel, Action action) {
+	private static MainModel update(Action action, MainModel oldModel) {
 		if (action instanceof PlusAction) {
 			return MainModel.copy(oldModel.builder
 					.withTicker(oldModel.ticker + 1)

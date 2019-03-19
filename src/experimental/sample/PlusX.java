@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import com.vaadin.data.Binder;
+import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -14,7 +15,7 @@ import experimental.support.extra.BoundTextField;
 import experimental.support.extra.DispatchButton;
 import experimental.support.ModelViewBinder;
 
-class PlusXLayout {
+class PlusX {
 
 	static class Model {
 
@@ -55,24 +56,26 @@ class PlusXLayout {
 	}
 
 	static Component view(Consumer<Action> mainUpdater) {
-		return ModelViewBinder.bindModelAndView(mainUpdater, Model.initialModel(), PlusXLayout::view, PlusXLayout::update);
+		return ModelViewBinder.bindModelAndView(mainUpdater, Model.initialModel(), PlusX::view, PlusX::update);
 	}
 
-	private static Component view(Binder<PlusXLayout.Model> binder, List<Consumer<Action>> dispatchers) {
+	private static Component view(Binder<PlusX.Model> binder, List<Consumer<Action>> dispatchers) {
 		HorizontalLayout layout = new HorizontalLayout();
 
 		TextField increment = BoundTextField.builder(binder)
 				.withValueProvider(model -> Integer.toString(model.increment))
-				.withValueConsumer(s -> new PlusXLayout.SetIncrement(Integer.valueOf((String) s)))
+				.withValueConsumer(s -> new PlusX.SetIncrement(Integer.valueOf((String) s)))
 				.withDispatchers(dispatchers)
 				.forField(textField -> textField.addStyleName("SomeStyle"))
+				.forField(textField -> textField.setWidth(50, Sizeable.Unit.PIXELS))
 				.build();
 		layout.addComponent(increment);
 
 		Button plus = DispatchButton.builder(dispatchers)
-				.withCaption(" + ")
+				.withCaption("+")
 				.withAction(() -> new Main.PlusXAction(binder.getBean().increment))
 				.forButton(button -> button.addStyleName("btn-mono"))
+				.forButton(button -> button.setWidth(50, Sizeable.Unit.PIXELS))
 				.build();
 		layout.addComponent(plus);
 
@@ -87,7 +90,7 @@ class PlusXLayout {
 		}
 	}
 
-	private static Model update(Model oldModel, Action action) {
+	private static Model update(Action action, Model oldModel) {
 		if (action instanceof SetIncrement) {
 			return Model.copy(oldModel.builder
 					.withIncrement(((SetIncrement) action).increment)

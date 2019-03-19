@@ -4,7 +4,8 @@
 
 Reduce boilerplate code
     
-- Add BoundTextField and DispatchButton
+- Add `bound` components: BoundTextField and BoundLabel
+- Add DispatchButton
 
 
 ## Version 2: 

@@ -16,7 +16,7 @@ public class BoundTextField<MODEL> {
 
 	private BoundTextField(Builder<MODEL> builder) {
 
-		this.textField = builder.wrappedField == null ? new TextField() : new TextField();
+		this.textField = builder.wrappedField == null ? new TextField() : builder.wrappedField;
 		Binder<MODEL> binder = builder.binder;
 
 		if(builder.dispatchers == null){

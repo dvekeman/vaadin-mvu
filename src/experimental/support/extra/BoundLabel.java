@@ -1,5 +1,6 @@
 package experimental.support.extra;
 
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import com.vaadin.data.Binder;
@@ -79,6 +80,11 @@ public class BoundLabel<MODEL, TYPE> {
 
 		public Builder<MODEL, TYPE> withEmptyValue(TYPE emptyValue){
 			this.emptyValue = emptyValue;
+			return this;
+		}
+
+		public Builder<MODEL, TYPE> forLabel(Consumer<Label> consumer){
+			consumer.accept(label);
 			return this;
 		}
 
