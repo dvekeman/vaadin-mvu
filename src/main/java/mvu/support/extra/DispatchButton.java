@@ -1,4 +1,4 @@
-package experimental.support.extra;
+package mvu.support.extra;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -6,7 +6,7 @@ import java.util.function.Supplier;
 
 import com.vaadin.ui.Button;
 
-import experimental.support.Action;
+import mvu.support.Action;
 
 public class DispatchButton {
 

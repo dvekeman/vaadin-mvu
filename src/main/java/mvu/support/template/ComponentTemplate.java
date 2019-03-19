@@ -1,4 +1,4 @@
-package experimental.support.template;
+package mvu.support.template;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -9,10 +9,10 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import experimental.support.Action;
-import experimental.support.ModelViewBinder;
-import experimental.support.extra.BoundTextField;
-import experimental.support.extra.DispatchButton;
+import mvu.support.Action;
+import mvu.support.ModelViewBinder;
+import mvu.support.extra.BoundTextField;
+import mvu.support.extra.DispatchButton;
 
 /**
  * Basic Component template

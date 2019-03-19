@@ -1,4 +1,4 @@
-package experimental.support.extra;
+package mvu.support.extra;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -8,7 +8,7 @@ import com.vaadin.data.Binder;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.ui.TextField;
 
-import experimental.support.Action;
+import mvu.support.Action;
 
 public class BoundTextField<MODEL> {
 
