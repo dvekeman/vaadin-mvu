@@ -4,14 +4,14 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import com.vaadin.data.Binder;
-import com.vaadin.data.ValueProvider;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import experimental.IntegerValidator;
 import experimental.support.Action;
+import experimental.support.extra.BoundTextField;
+import experimental.support.extra.DispatchButton;
 import experimental.support.ModelViewBinder;
 
 class MinusXLayout {
@@ -34,6 +34,10 @@ class MinusXLayout {
 			return new Model(builder);
 		}
 
+		static Model initialModel(){
+			return builder().build();
+		}
+
 		static class Builder {
 			int decrement = 10;
 
@@ -51,31 +55,27 @@ class MinusXLayout {
 	}
 
 	static Component view(Consumer<Action> mainUpdater) {
-		Model initialModel = Model.builder()
-				.build();
-		return ModelViewBinder.view(mainUpdater, initialModel, MinusXLayout::view, MinusXLayout::update);
+		return ModelViewBinder.bindModelAndView(mainUpdater, Model.initialModel(), MinusXLayout::view, MinusXLayout::update);
 	}
 
 
-	private static Component view(Binder<Model> binder, List<Consumer<Action>> updaters) {
+	private static Component view(Binder<Model> binder, List<Consumer<Action>> dispatchers) {
 		HorizontalLayout layout = new HorizontalLayout();
 
-		TextField decrement = new TextField();
-		binder.forField(decrement)
-				.withValidator(new IntegerValidator())
-				.bind((ValueProvider<Model, String>) model ->
-						Integer.toString(model.decrement), (model, s) ->
-						updaters.forEach(updater ->
-								updater.accept(new SetDecrement(Integer.valueOf(s)))));
+		TextField decrement = BoundTextField.builder(binder)
+				.withValueProvider(model -> Integer.toString(model.decrement))
+				.withValueConsumer(s -> new SetDecrement(Integer.valueOf((String) s)))
+				.withDispatchers(dispatchers)
+				.forField(textField -> textField.addStyleName("SomeStyle"))
+				.build();
 		layout.addComponent(decrement);
 
-		Button plus = new Button(" + ");
-		plus.addClickListener(clickEvent ->
-				updaters.forEach(updater ->
-						updater.accept(new Main.MinusXAction(binder.getBean().decrement)))
-		);
-		plus.addStyleName("btn-mono");
-		layout.addComponent(plus);
+		Button minus = DispatchButton.builder(dispatchers)
+				.withCaption(" - ")
+				.withAction(() -> new Main.MinusXAction(binder.getBean().decrement))
+				.forButton(button -> button.addStyleName("btn-mono"))
+				.build();
+		layout.addComponent(minus);
 
 		return layout;
 	}
@@ -94,7 +94,7 @@ class MinusXLayout {
 					.withDecrement(((SetDecrement) action).decrement)
 			);
 		} else {
-			throw new RuntimeException(String.format("Action %s is not yet implemented!", action));
+			return oldModel;
 		}
 	}
 

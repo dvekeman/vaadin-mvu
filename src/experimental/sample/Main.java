@@ -3,9 +3,6 @@ package experimental.sample;
 import java.util.function.Consumer;
 
 import com.vaadin.data.Binder;
-import com.vaadin.data.ReadOnlyHasValue;
-import com.vaadin.server.SerializableConsumer;
-import com.vaadin.server.Setter;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -15,10 +12,8 @@ import com.vaadin.ui.VerticalLayout;
 
 import experimental.support.Action;
 import experimental.support.ModelViewBinder;
+import experimental.support.extra.BoundLabel;
 
-/**
- * [ ] External API calls (e.g. a REST call)
- */
 class Main {
 
 	// MODEL
@@ -59,10 +54,10 @@ class Main {
 
 
 	// VIEW
-	// This initial view
+	// This initial bindModelAndView
 	static Component view() {
 		MainModel initialModel = MainModel.builder().build();
-		return ModelViewBinder.view(initialModel, Main::view, Main::update);
+		return ModelViewBinder.bindModelAndView(initialModel, Main::view, Main::update);
 	}
 
 	private static Component view(Binder<MainModel> binder, Consumer<Action> updater) {
@@ -70,12 +65,11 @@ class Main {
 		layout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 
 		// the ticker label itself
-		Label tickerLabel = new Label();
-		ReadOnlyHasValue<Integer> tickerLabelValue = new ReadOnlyHasValue<>((SerializableConsumer<Integer>) v ->
-				tickerLabel.setValue(Integer.toString(v)), 0);
-		binder.forField(tickerLabelValue).bind(model -> model.ticker, (Setter<MainModel, Integer>) (model, integer) -> {
-			throw new UnsupportedOperationException("fields should not update the model directly!");
-		});
+		Label tickerLabel = BoundLabel.builder(binder, Integer.class)
+				.withValueProcessor(Object::toString)
+				.withValueProvider(model -> model.ticker)
+				.withEmptyValue(0)
+				.build();
 		layout.addComponent(tickerLabel);
 
 		// the button ( + <x> ) (+) (-) and ( - <x> )
@@ -142,7 +136,7 @@ class Main {
 					.withTicker(oldModel.ticker - decrement)
 			);
 		} else {
-			throw new RuntimeException(String.format("Action %s is not yet implemented!", action));
+			return oldModel;
 		}
 	}
 }

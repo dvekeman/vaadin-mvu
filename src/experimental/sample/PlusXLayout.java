@@ -4,14 +4,14 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import com.vaadin.data.Binder;
-import com.vaadin.data.ValueProvider;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
-import experimental.IntegerValidator;
 import experimental.support.Action;
+import experimental.support.extra.BoundTextField;
+import experimental.support.extra.DispatchButton;
 import experimental.support.ModelViewBinder;
 
 class PlusXLayout {
@@ -34,6 +34,10 @@ class PlusXLayout {
 			return new Model(builder);
 		}
 
+		static Model initialModel() {
+			return builder().build();
+		}
+
 		static class Builder {
 			int increment = 10;
 
@@ -51,30 +55,25 @@ class PlusXLayout {
 	}
 
 	static Component view(Consumer<Action> mainUpdater) {
-		Model initialModel = Model.builder()
-				.build();
-		return ModelViewBinder.view(mainUpdater, initialModel, PlusXLayout::view, PlusXLayout::update);
+		return ModelViewBinder.bindModelAndView(mainUpdater, Model.initialModel(), PlusXLayout::view, PlusXLayout::update);
 	}
 
-
-	private static Component view(Binder<Model> binder, List<Consumer<Action>> updaters) {
+	private static Component view(Binder<PlusXLayout.Model> binder, List<Consumer<Action>> dispatchers) {
 		HorizontalLayout layout = new HorizontalLayout();
 
-		TextField increment = new TextField();
-		binder.forField(increment)
-				.withValidator(new IntegerValidator())
-				.bind((ValueProvider<Model, String>) model ->
-						Integer.toString(model.increment), (model, s) ->
-						updaters.forEach(updater ->
-								updater.accept(new SetIncrement(Integer.valueOf(s)))));
+		TextField increment = BoundTextField.builder(binder)
+				.withValueProvider(model -> Integer.toString(model.increment))
+				.withValueConsumer(s -> new PlusXLayout.SetIncrement(Integer.valueOf((String) s)))
+				.withDispatchers(dispatchers)
+				.forField(textField -> textField.addStyleName("SomeStyle"))
+				.build();
 		layout.addComponent(increment);
 
-		Button plus = new Button(" + ");
-		plus.addClickListener(clickEvent ->
-				updaters.forEach(updater ->
-						updater.accept(new Main.PlusXAction(binder.getBean().increment)))
-		);
-		plus.addStyleName("btn-mono");
+		Button plus = DispatchButton.builder(dispatchers)
+				.withCaption(" + ")
+				.withAction(() -> new Main.PlusXAction(binder.getBean().increment))
+				.forButton(button -> button.addStyleName("btn-mono"))
+				.build();
 		layout.addComponent(plus);
 
 		return layout;
@@ -94,7 +93,7 @@ class PlusXLayout {
 					.withIncrement(((SetIncrement) action).increment)
 			);
 		} else {
-			throw new RuntimeException(String.format("Action %s is not yet implemented!", action));
+			return oldModel;
 		}
 	}
 
