@@ -19,6 +19,7 @@ import mvu.support.extra.DispatchButton;
  */
 class ComponentTemplate {
 
+	private ComponentTemplate(){}
 
 	/* ************************************************************************************************************** */
 	/* MODEL

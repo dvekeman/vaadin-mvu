@@ -62,8 +62,6 @@ update : Action -> Model -> Model
 
 This is mainly because this is still experimental and ideally I would like to match up the signatures.
 
-Currently there is just one example but there should be more in the future.
-
 The main example shows a ticker label together with four other components:
 
 - (+) button to increment by one
@@ -71,12 +69,12 @@ The main example shows a ticker label together with four other components:
 - PlusX component to increment by a custom integer
 - MinusX component to decrement by a custom integer
 
-The `PlusX` and `MinusX` are themselves little Model-View-Update components they consist of 
+The `PlusX` and `MinusX` are themselves little _Model View Update_ which both consist of:
 
 - a TextField to enter the value
 - a Button to apply the increment or decrement
 
-A component consists of three sections which are typically implemented in the same class but nothing prevents you 
+A component itself has three sections which are typically implemented in the same class but nothing prevents you 
 from spreading them out into their own classes.
 
 - A Model which is a data class holding the state of the component
@@ -127,16 +125,16 @@ static class Model {
 
 It's a static inner class because the model should only contain the state which is local to the component.
 
-There is some boilerplate here though such as the `copy` and the `initialModel`. There are annotation processors
-for builders (such as the AutoValue Builder from Google) which should reduce some of this boilerplate here.
+There is some boilerplate here though such as the `copy` and the `initialModel`. There are annotation processors available
+for builders (such as the AutoValue Builder from Google) which should reduce some of this boilerplate here but I choose not to use them to reduce the dependency burdon.
 
-Try to keep the model as immutable as possible. The fields are marked `final` for a good reason and there are not getters
+Try to keep the model as immutable as possible. The fields are marked `final` for a good reason and there are no getters
 and setters. A getter would of course be ok but given it's internal in this case we can just access the field directly without
 breaking any encapsulation rules. Should you move the model to an upper class then it's probably best to introduce getters.
 
 Updates to the model are done by copying the model (using the #copy(Model.Builder builder)) and using the `with...` methods on the builder.
 For basic types this all works fine however for objects this might be more tricky: should we deep copy each object (I think ideally yes)?
-Can it be achieved in a nice way?
+Can it be achieved in a nice way (I'm not considering Cloneable as that has a broken design [1])?
 
 All in all you can easily see that the model is just a simple data class holding some state, a increment value in this case.
 
@@ -249,12 +247,15 @@ As a final note, there is a `ComponentTemplate` in the `template` package which 
 
 ## Future work
 
-This is very incomplete and a few emerging questions are
+This is very incomplete and a few emerging questions | tasks are
 
 - How to deal with bigger, more complex models
 - How to deal with backend calls (REST, database, ...)
 - Add support for more Vaadin components besides labels, textfields and buttons
+- Implement the library in Kotlin (wonder why I didn't do that in the first place...)
 
 ## License
 
 There is obviously no LICENSE for the pattern. If you like or use it, drop me a note or star!
+
+[1][https://www.artima.com/intv/bloch13.html]

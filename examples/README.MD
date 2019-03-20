@@ -1,0 +1,28 @@
+# Vaadin Model View Update - Examples
+
+For an introduction the MVU pattern for Vaadin, see my [vaadin-mvu][https://github.com/dvekeman/vaadin-mvu] library.
+
+All examples are standalone gradle projects. To run them, just go into the example folder and type
+
+```
+./gradlew :appRun
+```
+
+## Example1: Simple Counter
+
+This is a basic example showing some components which interact together to increment a single counter.
+
+[example1-simple-counter][https://github.com/dvekeman/vaadin-mvu/examples/example1-simple-counter]
+
+## Example2: REST DataBinding
+
+This example shows that combining the MVU pattern with other approaches (in this case direct databinding) is
+perfectly fine.
+
+[example2-rest-binding][https://github.com/dvekeman/vaadin-mvu/examples/example2-rest-binding]
+
+## Future examples
+
+- Feel free to send in a request about _How do I...?_
+- Implement the standard Vaadin MVP example (Calculator)
+- Implement TODOMVC

@@ -13,15 +13,19 @@ public class BoundLabel<MODEL, TYPE> {
 
 	private final Label label;
 
-	private BoundLabel(Builder<MODEL, TYPE> builder){
+	private BoundLabel(Builder<MODEL, TYPE> builder) {
 		this.label = builder.label;
 
-		if(builder.valueProcessor == null){
-			throw new RuntimeException("Please provide a valueProcessor for this label to actually show something. See `withConsumer`");
+		if (builder.valueProcessor == null) {
+			throw new RuntimeException("Please provide a valueProcessor for this label to actually show something. See `withValueProcessor`");
+		}
+
+		if (builder.valueProvider== null) {
+			throw new RuntimeException("Please provide a valueProvider for this label to actually show something. See `withValueProvider`");
 		}
 
 		ReadOnlyHasValue<TYPE> readOnlyLabel;
-		if(builder.emptyValue == null){
+		if (builder.emptyValue == null) {
 			readOnlyLabel = new ReadOnlyHasValue<>(v -> label.setValue(builder.valueProcessor.apply(v)));
 		} else {
 			readOnlyLabel = new ReadOnlyHasValue<>(v -> label.setValue(builder.valueProcessor.apply(v)), builder.emptyValue);
@@ -33,11 +37,11 @@ public class BoundLabel<MODEL, TYPE> {
 
 	}
 
-	public static <MODEL, TYPE> Builder<MODEL, TYPE> builder(Binder<MODEL> binder, Class<TYPE> labelTypeClass){
+	public static <MODEL, TYPE> Builder<MODEL, TYPE> builder(Binder<MODEL> binder, Class<TYPE> labelTypeClass) {
 		return new Builder<>(binder, labelTypeClass);
 	}
 
-	public static <MODEL, TYPE> Builder<MODEL, TYPE> builder(Label label, Binder<MODEL> binder, Class<TYPE> labelTypeClass){
+	public static <MODEL, TYPE> Builder<MODEL, TYPE> builder(Label label, Binder<MODEL> binder, Class<TYPE> labelTypeClass) {
 		return new Builder<>(label, binder, labelTypeClass);
 	}
 
@@ -51,7 +55,7 @@ public class BoundLabel<MODEL, TYPE> {
 		private Function<TYPE, String> valueProcessor;
 		private TYPE emptyValue;
 
-		private Builder(Binder<MODEL> binder, Class<TYPE> labelTypeClass){
+		private Builder(Binder<MODEL> binder, Class<TYPE> labelTypeClass) {
 			this(new Label(), binder, labelTypeClass);
 		}
 
@@ -67,28 +71,22 @@ public class BoundLabel<MODEL, TYPE> {
 			return this;
 		}
 
-		/**
-		 *
-		 *
-		 * @param valueProcessor
-		 * @return
-		 */
-		public Builder<MODEL, TYPE> withValueProcessor(Function<TYPE, String> valueProcessor){
+		public Builder<MODEL, TYPE> withValueProcessor(Function<TYPE, String> valueProcessor) {
 			this.valueProcessor = valueProcessor;
 			return this;
 		}
 
-		public Builder<MODEL, TYPE> withEmptyValue(TYPE emptyValue){
+		public Builder<MODEL, TYPE> withEmptyValue(TYPE emptyValue) {
 			this.emptyValue = emptyValue;
 			return this;
 		}
 
-		public Builder<MODEL, TYPE> forLabel(Consumer<Label> consumer){
+		public Builder<MODEL, TYPE> forLabel(Consumer<Label> consumer) {
 			consumer.accept(label);
 			return this;
 		}
 
-		public Label build(){
+		public Label build() {
 			BoundLabel<MODEL, TYPE> boundLabel = new BoundLabel<>(this);
 			return boundLabel.label;
 		}

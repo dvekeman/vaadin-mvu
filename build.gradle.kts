@@ -1,5 +1,7 @@
 plugins {
     `java-library`
+    `maven-publish`
+    signing
 }
 
 repositories {
@@ -17,4 +19,40 @@ dependencies {
     // implementation("com.google.guava:guava:27.0.1-jre")
     implementation("com.vaadin:vaadin-server:8.7.1")
 
+}
+
+tasks.register<Jar>("sourcesJar") {
+    archiveClassifier.set("sources")
+    from(sourceSets.main.get().allJava)
+}
+
+tasks.register<Jar>("javadocJar") {
+    archiveClassifier.set("javadoc")
+    from(tasks.javadoc.get().destinationDir)
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("myLibrary") {
+            from(components["java"])
+        }
+
+        create<MavenPublication>("mavenJava") {
+            from(components["java"])
+
+            artifact(tasks["sourcesJar"])
+            artifact(tasks["javadocJar"])
+        }
+    }
+
+    repositories {
+        maven {
+            name = "myRepo"
+            url = uri("file://${buildDir}/repo")
+        }
+    }
+}
+
+signing {
+    sign(publishing.publications["mavenJava"])
 }
