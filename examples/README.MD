@@ -12,14 +12,15 @@ All examples are standalone gradle projects. To run them, just go into the examp
 
 This is a basic example showing some components which interact together to increment a single counter.
 
-[example1-simple-counter][https://github.com/dvekeman/vaadin-mvu/examples/example1-simple-counter]
+[example1-simple-counter][https://github.com/dvekeman/vaadin-mvu/tree/master/examples/example1-simple-counter]
+
 
 ## Example2: REST DataBinding
 
 This example shows that combining the MVU pattern with other approaches (in this case direct databinding) is
 perfectly fine.
 
-[example2-rest-binding][https://github.com/dvekeman/vaadin-mvu/examples/example2-rest-binding]
+[example2-rest-binding][https://github.com/dvekeman/vaadin-mvu/tree/master/examples/example2-rest-binding]
 
 ## Future examples
 

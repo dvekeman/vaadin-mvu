@@ -1,8 +1,12 @@
-# Example 1: Counter
+# Model View Update for Vaadin - Examples
+
+For an introduction the MVU pattern for Vaadin, see my [vaadin-mvu][https://github.com/dvekeman/vaadin-mvu] library.
+
+## Example 1: Counter
 
 Here is a screenshot to set the scene
 
-![Vaadin MVU Ticker Example](https://github.com/dvekeman/vaadin-mvu/blob/master/examples/example1-simple-counter/doc/img/vaadin-mvu-example1.png)
+![Vaadin MVU Ticker Example](https://raw.githubusercontent.com/dvekeman/vaadin-mvu-example/master/doc/img/vaadin-mvu-example1.png)
 
 To get it up and running quickly
 
