@@ -9,7 +9,7 @@ repositories {
 }
 
 group = "vaadin-mvu"
-version = "0.1"
+version = "0.1.1"
 
 dependencies {
     // This dependency is exported to consumers, that is to say found on their compile classpath.
