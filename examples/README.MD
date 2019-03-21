@@ -22,8 +22,20 @@ perfectly fine.
 
 [example2-rest-binding](https://github.com/dvekeman/vaadin-mvu/tree/master/examples/example2-rest-binding)
 
+## Example3: Calculator (port of the Vaadin MVP Example)
+
+This example shows how the Vaadin MVP Calculator example would look like in MVU.
+
+[example3-calculator](https://github.com/dvekeman/vaadin-mvu/tree/master/examples/example3-calculator)
+
+## Example4: Combo
+
+This example shows how to combine several components together.
+
+[example4-combo](https://github.com/dvekeman/vaadin-mvu/tree/master/examples/example4-combo)
+
+
 ## Future examples
 
 - Feel free to send in a request about _How do I...?_
-- Implement the standard Vaadin MVP example (Calculator)
 - Implement TODOMVC

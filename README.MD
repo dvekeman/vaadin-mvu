@@ -241,6 +241,30 @@ Personally I would like to have one extra feature in this function which is case
 if you forgot to handle an Msg in your update function. Here, due to the else case, these will go unnoticed.
 On the other hand, in Elm, it's harder to trigger Actions on the Main (or parent) component whereas here that's easier (hopefully for the better).
 
+When working in Elm it's very conventient that The Elm Architecture gives a guideline and a standard set of method signatures like
+
+_Note: Action == Msg_
+
+```
+init : (Model, Cmd Msg)
+type alias Model = {..}
+view : Model -> Html Msg
+update : Msg -> Model -> (Model, Cmd Msg) 
+```
+
+But these are not fixed and you can change these signatures as you see fit (e.g. to pass extra variables around).
+The same goes for the vaadin-mvu: 
+
+All of these signatures would work and you get a flexible structure to work with.
+
+```
+	private static Component view(Binder<MainModel> binder, Consumer<Action> dispatchers) {...}
+
+	private static Component view(Binder<MainModel> binder, List<Consumer<Action>> dispatchers) {...}
+
+	private static Component view(CustomHandler myHandler, Binder<MainModel> binder, List<Consumer<Action>> dispatchers) {...}
+```
+
 As a final note, there is a `ComponentTemplate` in the `template` package which can be copy/pasted to create new components.
 
 `() -> enjoy()`

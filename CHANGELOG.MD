@@ -1,6 +1,11 @@
 # Changelog
 
-## Version 3: 
+## Version 0.1.1: 
+
+- Composing dispatchers
+- Lists of dispatchers
+
+## Version 0.1.0alpha3: 
 
 Reduce boilerplate code
     
@@ -8,7 +13,7 @@ Reduce boilerplate code
 - Add DispatchButton
 
 
-## Version 2: 
+## Version 0.1.0alpha2: 
 
 Reduce boilerplate code
     
@@ -16,7 +21,7 @@ Reduce boilerplate code
 - Restructure into a growing library vs example code
 
 
-## Version 1:
+## Version 0.1.0alpha1:
     
 - Basic Model View Update pattern
 
