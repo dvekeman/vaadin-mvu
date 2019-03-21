@@ -282,4 +282,4 @@ This is very incomplete and a few emerging questions | tasks are
 
 There is obviously no LICENSE for the pattern. If you like or use it, drop me a note or star!
 
-[1][https://www.artima.com/intv/bloch13.html]
+[1]: https://www.artima.com/intv/bloch13.html
