@@ -94,7 +94,7 @@ public class ModelViewBinder {
 	 * @return A Vaadin component
 	 */
 	public static <MODEL> Component bindModelAndView(
-			Consumer<Action> parentDispatcher,
+			List<Consumer<Action>> parentDispatcher,
 			/* MODEL  */ MODEL model,
 			/* VIEW   */ BiFunction<Binder<MODEL>, List<Consumer<Action>>, Component> view,
 			/* UPDATE */ BiFunction<Action, MODEL, MODEL> update) {
@@ -102,8 +102,7 @@ public class ModelViewBinder {
 		Binder<MODEL> binder = new Binder<>();
 		binder.setBean(model);
 
-		List<Consumer<Action>> updaters = new ArrayList<>();
-		updaters.add(parentDispatcher);
+		List<Consumer<Action>> updaters = new ArrayList<>(parentDispatcher);
 		updaters.add(
 				action -> {
 					MODEL oldModel = binder.getBean();
@@ -114,6 +113,14 @@ public class ModelViewBinder {
 		);
 
 		return view.apply(binder, updaters);
+	}
+
+	public static <MODEL> Component bindModelAndView(
+			Consumer<Action> parentDispatcher,
+			/* MODEL  */ MODEL model,
+			/* VIEW   */ BiFunction<Binder<MODEL>, List<Consumer<Action>>, Component> view,
+			/* UPDATE */ BiFunction<Action, MODEL, MODEL> update) {
+		return bindModelAndView(SingletonDispatcher.wrap(parentDispatcher), model, view, update);
 	}
 
 	/**
