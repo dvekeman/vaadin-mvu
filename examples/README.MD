@@ -1,6 +1,6 @@
 # Vaadin Model View Update - Examples
 
-For an introduction the MVU pattern for Vaadin, see my [vaadin-mvu][https://github.com/dvekeman/vaadin-mvu] library.
+For an introduction the MVU pattern for Vaadin, see my [vaadin-mvu](https://github.com/dvekeman/vaadin-mvu) library.
 
 All examples are standalone gradle projects. To run them, just go into the example folder and type
 
@@ -12,7 +12,7 @@ All examples are standalone gradle projects. To run them, just go into the examp
 
 This is a basic example showing some components which interact together to increment a single counter.
 
-[example1-simple-counter][https://github.com/dvekeman/vaadin-mvu/tree/master/examples/example1-simple-counter]
+[example1-simple-counter](https://github.com/dvekeman/vaadin-mvu/tree/master/examples/example1-simple-counter)
 
 
 ## Example2: REST DataBinding
@@ -20,7 +20,7 @@ This is a basic example showing some components which interact together to incre
 This example shows that combining the MVU pattern with other approaches (in this case direct databinding) is
 perfectly fine.
 
-[example2-rest-binding][https://github.com/dvekeman/vaadin-mvu/tree/master/examples/example2-rest-binding]
+[example2-rest-binding](https://github.com/dvekeman/vaadin-mvu/tree/master/examples/example2-rest-binding)
 
 ## Future examples
 
