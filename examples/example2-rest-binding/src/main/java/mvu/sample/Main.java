@@ -1,12 +1,11 @@
 package mvu.sample;
 
-import java.util.function.Consumer;
-
 import com.vaadin.data.Binder;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 
 import mvu.support.Action;
+import mvu.support.Dispatcher;
 import mvu.support.ModelViewBinder;
 
 class Main {
@@ -50,7 +49,7 @@ class Main {
 		return ModelViewBinder.bindModelAndView(initialModel, Main::view, Main::update);
 	}
 
-	private static Component view(Binder<MainModel> binder, Consumer<Action> dispatcher) {
+	private static Component view(Binder<MainModel> binder, Dispatcher dispatcher) {
 		HorizontalLayout layout = new HorizontalLayout();
 
 		layout.addComponent(HerosGrid.view(dispatcher));

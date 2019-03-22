@@ -30,3 +30,12 @@ Its layout has 5 components
 - A MinusX component
 
 This demostrates how to compose an application out of subcomponents: PlusX and MinusX are themselves MVU components holding their own state and containing their own actions.
+
+## Notes
+
+This example uses version 0.1.0
+
+## TODO
+
+[] More documentation on the example
+[] Upgrade to 0.2.0 (or later)

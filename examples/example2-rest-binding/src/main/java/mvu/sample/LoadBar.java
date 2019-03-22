@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.vaadin.data.Binder;
@@ -24,6 +23,7 @@ import mvu.sample.model.Person;
 import mvu.support.Action;
 import mvu.support.AsyncAction;
 import mvu.support.AsyncActionResult;
+import mvu.support.Dispatcher;
 import mvu.support.ModelViewBinder;
 import mvu.support.extra.BoundTextField;
 import mvu.support.extra.DispatchButton;
@@ -84,19 +84,19 @@ class LoadBar {
 	/* VIEW
 	/* ************************************************************************************************************** */
 
-	static Component view(List<Consumer<Action>> mainUpdater) {
-		return ModelViewBinder.bindModelAndViewV2(mainUpdater, Model.initialModel(), LoadBar::view, LoadBar::update);
+	static Component view(Dispatcher parentDispatcher) {
+		return ModelViewBinder.bindModelAndViewV2(parentDispatcher, Model.initialModel(), LoadBar::view, LoadBar::update);
 	}
 
 
-	private static Component view(Binder<Model> binder, List<Consumer<Action>> dispatchers) {
+	private static Component view(Binder<Model> binder, Dispatcher dispatcher) {
 		HorizontalLayout loadLayout = new HorizontalLayout();
 		TextField url = BoundTextField.builder(binder)
-				.withDispatchers(dispatchers)
+				 .withDispatcher(dispatcher)
 				.withValueConsumer(SetUrl::new)
 				.withValueProvider(model -> model.url)
 				.build();
-		Button loadHeros = DispatchButton.builder(dispatchers)
+		Button loadHeros = DispatchButton.builder(dispatcher)
 				.withCaption("Load heros")
 				.withAction(() -> new LoadHeros(binder.getBean().url))
 				.build();
@@ -119,7 +119,7 @@ class LoadBar {
 		}
 	}
 
-	static class LoadHeros implements Action, AsyncAction<HerosGrid.LoadError, HerosGrid.HerosLoaded> {
+	static class LoadHeros implements Action, AsyncAction<HerosGrid.HerosLoading, HerosGrid.LoadError, HerosGrid.HerosLoaded> {
 		final String url;
 
 		LoadHeros(String url) {
@@ -129,6 +129,11 @@ class LoadBar {
 		@Override
 		public AsyncActionResult<HerosGrid.LoadError, HerosGrid.HerosLoaded> perform() {
 			return fetchHeros(this.url);
+		}
+
+		@Override
+		public HerosGrid.HerosLoading getStartAction() {
+			return new HerosGrid.HerosLoading();
 		}
 	}
 

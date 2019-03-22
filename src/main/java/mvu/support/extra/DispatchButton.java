@@ -1,13 +1,14 @@
 package mvu.support.extra;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.vaadin.ui.Button;
 
 import mvu.support.Action;
+import mvu.support.BroadcastAction;
+import mvu.support.Dispatcher;
 
 public class DispatchButton implements Serializable {
 
@@ -24,37 +25,40 @@ public class DispatchButton implements Serializable {
 			throw new RuntimeException("An action supplier must be provided for this button to actually do something");
 		}
 
-		Action action = builder.actionSupplier.get();
-
-		button.addClickListener(clickEvent ->
-				builder.dispatcher.forEach(updater ->
-						updater.accept(action))
-		);
+		button.addClickListener(clickEvent -> {
+			Action action = builder.actionSupplier.get();
+			if (action instanceof BroadcastAction) {
+				builder.dispatcher.getAllDispatchers().forEach(dispatcher ->
+						dispatcher.accept(action));
+			} else {
+				builder.dispatcher.getDispatcher().accept(action);
+			}
+		});
 
 	}
 
-	public static DispatchButton.Builder builder(List<Consumer<Action>> dispatcher) {
+	public static DispatchButton.Builder builder(Dispatcher dispatcher) {
 		return new DispatchButton.Builder(dispatcher);
 	}
 
-	public static DispatchButton.Builder builder(Button button, List<Consumer<Action>> dispatcher) {
+	public static DispatchButton.Builder builder(Button button, Dispatcher dispatcher) {
 		return new DispatchButton.Builder(button, dispatcher);
 	}
 
 	public static class Builder implements Serializable {
 
 		private final Button button;
-		private final List<Consumer<Action>> dispatcher;
+		private final Dispatcher dispatcher;
 
 		private String caption;
 		private Supplier<Action> actionSupplier;
 
 
-		private Builder(List<Consumer<Action>> dispatcher) {
+		private Builder(Dispatcher dispatcher) {
 			this(new Button(), dispatcher);
 		}
 
-		private Builder(Button button, List<Consumer<Action>> dispatcher) {
+		private Builder(Button button, Dispatcher dispatcher) {
 			this.button = button;
 			this.dispatcher = dispatcher;
 		}

@@ -27,4 +27,14 @@ Its layout has .. components
 
 This gives you an idea how an MVP implementation (see [Vaadin _Advanced Application Architectures_][1]) would compare to an MVU implementation.
 
+## Notes
+
+This example uses version 0.1.0
+
+## TODO
+
+[] More documentation on the example
+[] Upgrade to 0.2.0 (or later)
+
 [1]: https://vaadin.com/docs/v8/framework/advanced/advanced-architecture.html
+

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import com.vaadin.data.Binder;
@@ -16,8 +15,9 @@ import com.vaadin.ui.VerticalLayout;
 
 import mvu.sample.model.Person;
 import mvu.support.Action;
+import mvu.support.BroadcastAction;
+import mvu.support.Dispatcher;
 import mvu.support.ModelViewBinder;
-import mvu.support.SingletonDispatcher;
 import mvu.support.extra.BoundGrid;
 import mvu.support.extra.BoundLabel;
 
@@ -88,12 +88,12 @@ class HerosGrid {
 	/* VIEW
 	/* ************************************************************************************************************** */
 
-	static Component view(Consumer<Action> mainUpdater) {
-		return ModelViewBinder.bindModelAndViewV2(SingletonDispatcher.wrap(mainUpdater), Model.initialModel(), HerosGrid::view, HerosGrid::update);
+	static Component view(Dispatcher mainUpdater) {
+		return ModelViewBinder.bindModelAndViewV2(mainUpdater, Model.initialModel(), HerosGrid::view, HerosGrid::update);
 	}
 
 
-	private static Component view(Binder<Model> binder, List<Consumer<Action>> dispatchers) {
+	private static Component view(Binder<Model> binder, Dispatcher dispatcher) {
 		VerticalLayout layout = new VerticalLayout();
 
 		Label info = new Label();
@@ -106,7 +106,7 @@ class HerosGrid {
 						+ "<br/>"
 		);
 
-		Component loadBar = LoadBar.view(dispatchers);
+		Component loadBar = LoadBar.view(dispatcher);
 
 		Grid<Person> herosGrid = BoundGrid.builder(binder, Person.class)
 				.withValueProvider(model -> model.heros)
@@ -131,7 +131,11 @@ class HerosGrid {
 	/* UPDATE
 	/* ************************************************************************************************************** */
 
-	static class HerosLoaded implements Action {
+	static class HerosLoading implements BroadcastAction {
+
+	}
+
+	static class HerosLoaded implements BroadcastAction {
 		private final List<Person> heros;
 
 		HerosLoaded(List<Person> heros) {
@@ -139,7 +143,7 @@ class HerosGrid {
 		}
 	}
 
-	static class LoadError implements Action {
+	static class LoadError implements BroadcastAction {
 		private final String error;
 
 		LoadError(String error) {
@@ -157,11 +161,11 @@ class HerosGrid {
 			return Model.copy(oldModel, oldModel.builder
 					.withStatus("Loading heros failed: " + ((LoadError) action).error)
 			);
-//		} else if (action instanceof LoadBar.LoadHeros) {
-//			return Model.copy(oldModel, oldModel.builder
-//					.withStatus("Loading...")
-//					.withHeros(new ArrayList<>())
-//			);
+		} else if (action instanceof HerosLoading) {
+			return Model.copy(oldModel, oldModel.builder
+					.withStatus("Loading...")
+					.withHeros(new ArrayList<>())
+			);
 		} else {
 			return oldModel;
 		}

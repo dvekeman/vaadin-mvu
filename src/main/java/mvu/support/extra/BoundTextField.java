@@ -1,7 +1,6 @@
 package mvu.support.extra;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -10,6 +9,8 @@ import com.vaadin.data.ValueProvider;
 import com.vaadin.ui.TextField;
 
 import mvu.support.Action;
+import mvu.support.BroadcastAction;
+import mvu.support.Dispatcher;
 
 public class BoundTextField<MODEL> implements Serializable {
 
@@ -20,14 +21,18 @@ public class BoundTextField<MODEL> implements Serializable {
 		this.textField = builder.wrappedField == null ? new TextField() : builder.wrappedField;
 		Binder<MODEL> binder = builder.binder;
 
-		if (builder.dispatchers == null) {
+		if (builder.dispatcher == null) {
 			throw new RuntimeException("Missing dispatchers. See `withDispatchers`");
 		}
 
 		binder.forField(textField).bind(builder.valueProvider, (model, s) -> {
-			List<Consumer<Action>> updaters = builder.dispatchers;
 			Action action = builder.valueConsumer.apply(s);
-			updaters.forEach(updater -> updater.accept(action));
+			if (action instanceof BroadcastAction) {
+				builder.dispatcher.getAllDispatchers().forEach(dispatcher ->
+						dispatcher.accept(action));
+			} else {
+				builder.dispatcher.getDispatcher().accept(action);
+			}
 		});
 
 
@@ -47,7 +52,7 @@ public class BoundTextField<MODEL> implements Serializable {
 		private final Binder<MODEL> binder;
 		private ValueProvider<MODEL, String> valueProvider;
 		private Function<String, Action> valueConsumer;
-		private List<Consumer<Action>> dispatchers;
+		private Dispatcher dispatcher;
 
 		private Builder(Binder<MODEL> binder) {
 			this(binder, new TextField());
@@ -59,8 +64,8 @@ public class BoundTextField<MODEL> implements Serializable {
 			this.wrappedField = textField;
 		}
 
-		public Builder<MODEL> withDispatchers(List<Consumer<Action>> dispatchers) {
-			this.dispatchers = dispatchers;
+		public Builder<MODEL> withDispatcher(Dispatcher dispatcher) {
+			this.dispatcher = dispatcher;
 			return this;
 		}
 

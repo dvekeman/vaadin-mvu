@@ -10,6 +10,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 
 import mvu.support.Action;
+import mvu.support.Dispatcher;
 import mvu.support.ModelViewBinder;
 import mvu.support.extra.BoundTextField;
 import mvu.support.extra.DispatchButton;
@@ -72,12 +73,12 @@ class ComponentTemplate {
 	/* VIEW
 	/* ************************************************************************************************************** */
 
-	static Component view(Consumer<Action> mainUpdater) {
-		return ModelViewBinder.bindModelAndView(mainUpdater, Model.initialModel(), ComponentTemplate::view, ComponentTemplate::update);
+	static Component view(Dispatcher parentDispatcher) {
+		return ModelViewBinder.bindModelAndView(parentDispatcher, Model.initialModel(), ComponentTemplate::view, ComponentTemplate::update);
 	}
 
 
-	private static Component view(Binder<Model> binder, List<Consumer<Action>> dispatchers) {
+	private static Component view(Binder<Model> binder, Dispatcher dispatcher) {
 		HorizontalLayout layout = new HorizontalLayout();
 
 		TextField textField = BoundTextField.builder(binder)
@@ -85,7 +86,7 @@ class ComponentTemplate {
 				.build();
 		layout.addComponent(textField);
 
-		Button button = DispatchButton.builder(dispatchers)
+		Button button = DispatchButton.builder(dispatcher)
 				// ...
 				.build();
 		layout.addComponent(button);

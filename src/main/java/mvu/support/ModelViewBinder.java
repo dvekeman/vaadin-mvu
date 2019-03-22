@@ -1,6 +1,5 @@
 package mvu.support;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
@@ -95,38 +94,38 @@ public class ModelViewBinder {
 	 * @param <MODEL>          Generic model parameter
 	 * @return A Vaadin component
 	 */
+	//TODO: update doc
 	public static <MODEL> Component bindModelAndView(
-			List<Consumer<Action>> parentDispatcher,
+			Dispatcher parentDispatcher,
 			/* MODEL  */ MODEL model,
-			/* VIEW   */ BiFunction<Binder<MODEL>, List<Consumer<Action>>, Component> view,
+			/* VIEW   */ BiFunction<Binder<MODEL>, Dispatcher, Component> view,
 			/* UPDATE */ BiFunction<Action, MODEL, MODEL> update) {
 
 		Binder<MODEL> binder = new Binder<>();
 		binder.setBean(model);
 
-		List<Consumer<Action>> updaters = new ArrayList<>(parentDispatcher);
-		updaters.add(
-				action -> {
-					MODEL oldModel = binder.getBean();
-					// This is the important part: update creates a new MainModel and rebinds it.
-					MODEL newModel = update.apply(action, oldModel);
-					binder.setBean(newModel);
-				}
-		);
+		Dispatcher dispatcher = new Dispatcher(parentDispatcher.getAllDispatchers(), action -> {
+			MODEL oldModel = binder.getBean();
+			// This is the important part: update creates a new MainModel and rebinds it.
+			MODEL newModel = update.apply(action, oldModel);
+			binder.setBean(newModel);
+		});
 
-		return view.apply(binder, updaters);
+		return view.apply(binder, dispatcher);
+
 	}
 
-	public static <MODEL> Component bindModelAndView(
-			Consumer<Action> parentDispatcher,
-			/* MODEL  */ MODEL model,
-			/* VIEW   */ BiFunction<Binder<MODEL>, List<Consumer<Action>>, Component> view,
-			/* UPDATE */ BiFunction<Action, MODEL, MODEL> update) {
-		return bindModelAndView(SingletonDispatcher.wrap(parentDispatcher), model, view, update);
-	}
+//	public static <MODEL> Component bindModelAndView(
+//			Dispatcher parentDispatcher,
+//			/* MODEL  */ MODEL model,
+//			/* VIEW   */ BiFunction<Binder<MODEL>, Dispatcher, Component> view,
+//			/* UPDATE */ BiFunction<Action, MODEL, MODEL> update) {
+//		return bindModelAndView(parentDispatcher, model, view, update);
+//	}
+//
 
 	/**
-	 * Same as {@link #bindModelAndView(Consumer, Object, BiFunction, BiFunction)} but without the parent dispatcher.
+	 * Same as {@link #bindModelAndView(Dispatcher, Object, BiFunction, BiFunction)} but without the parent dispatcher.
 	 * <p>
 	 * This is either for the root component which does not have a parent or for child components which do not
 	 * interact with their ancesters.
@@ -139,35 +138,36 @@ public class ModelViewBinder {
 	 */
 	public static <MODEL> Component bindModelAndView(
 			/* MODEL  */ MODEL model,
-			/* VIEW   */ BiFunction<Binder<MODEL>, Consumer<Action>, Component> view,
+			/* VIEW   */ BiFunction<Binder<MODEL>, Dispatcher, Component> view,
 			/* UPDATE */ BiFunction<Action, MODEL, MODEL> update) {
 
 		Binder<MODEL> binder = new Binder<>();
 		binder.setBean(model);
 
-		return view.apply(binder, action -> {
-			MODEL oldModel = binder.getBean();
-			// This is the important part: update creates a new MainModel and rebinds it.
-			MODEL newModel = update.apply(action, oldModel);
-			binder.setBean(newModel);
-		});
+		VaadinSession vaadinSession = VaadinSession.getCurrent();
+		Dispatcher dispatcher = new Dispatcher(action ->
+				doSyncAction(vaadinSession, binder, Dispatcher.empty(), update, action)
+		);
+
+		return view.apply(binder, dispatcher);
 	}
 
 	public static <MODEL> Component bindModelAndViewV2(
-			List<Consumer<Action>> parentDispatcher,
+			Dispatcher parentDispatcher,
 			/* MODEL  */ MODEL model,
-			/* VIEW   */ BiFunction<Binder<MODEL>, List<Consumer<Action>>, Component> view,
+			/* VIEW   */ BiFunction<Binder<MODEL>, Dispatcher, Component> view,
 			/* UPDATE */ BiFunction<Action, MODEL, MODEL> update) {
 
 		Binder<MODEL> binder = new Binder<>();
 		binder.setBean(model);
 
-		List<Consumer<Action>> updaters = new ArrayList<>(parentDispatcher);
-		updaters.add(
-				action -> doSyncOrAsyncAction(binder, update, action)
+		VaadinSession vaadinSession = VaadinSession.getCurrent();
+		List<Consumer<Action>> parentDispatchers = parentDispatcher.getAllDispatchers();
+		Dispatcher dispatcher = new Dispatcher(parentDispatchers, action ->
+				doSyncOrAsyncAction(vaadinSession, binder, update, parentDispatcher, action)
 		);
 
-		return view.apply(binder, updaters);
+		return view.apply(binder, dispatcher);
 	}
 
 	/**
@@ -190,27 +190,32 @@ public class ModelViewBinder {
 	 * @param action  Action to run
 	 * @param <MODEL> Generic model parameter
 	 */
-	private static <MODEL> void doSyncOrAsyncAction(Binder<MODEL> binder, BiFunction<Action, MODEL, MODEL> update, Action action) {
-		VaadinSession vaadinSession = VaadinSession.getCurrent();
+	private static <MODEL> void doSyncOrAsyncAction(VaadinSession vaadinSession, Binder<MODEL> binder, BiFunction<Action, MODEL, MODEL> update, Dispatcher parentDispatcher, Action action) {
 		if (action instanceof AsyncAction) {
+			AsyncAction asyncAction = ((AsyncAction)action);
 			boolean pushEnabled = vaadinSession.getUIs().stream()
 					.map(UI::getPushConfiguration)
 					.map(PushConfiguration::getPushMode)
 					.anyMatch(PushMode::isEnabled);
-			if(!pushEnabled){
+			if (!pushEnabled) {
 				throw new RuntimeException("Vaadin Push must be enabled for AsyncActions. Enable @Push for this UI.");
 			}
-			CompletableFuture<AsyncActionResult<? extends Action, ? extends Action>> f = CompletableFuture.supplyAsync(((AsyncAction) action)::perform);
-			doSyncAction(vaadinSession, binder, update, action);
+			// First run the start action (e.g. set the screen to 'Loading'
+			doSyncAction(vaadinSession, binder, parentDispatcher, update, asyncAction.getStartAction());
+			// Then run the async task itself
+			CompletableFuture<AsyncActionResult<? extends Action, ? extends Action>> f = CompletableFuture.supplyAsync((asyncAction)::perform);
+			// And run the action through the dispatcher (typically this is *not* a broadcast action so only the owner component should respond to this
+			doSyncAction(vaadinSession, binder, parentDispatcher, update, action);
+			// When the result comes back execute either the Fail or the Success action
 			f.thenAccept(eitherLeftOrRight -> {
 				if (eitherLeftOrRight.isLeft()) {
-					doSyncAction(vaadinSession, binder, update, eitherLeftOrRight.left());
+					doSyncAction(vaadinSession, binder, parentDispatcher, update, eitherLeftOrRight.left());
 				} else {
-					doSyncAction(vaadinSession, binder, update, eitherLeftOrRight.right());
+					doSyncAction(vaadinSession, binder, parentDispatcher, update, eitherLeftOrRight.right());
 				}
 			});
 		} else {
-			doSyncAction(vaadinSession, binder, update, action);
+			doSyncAction(vaadinSession, binder, parentDispatcher, update, action);
 		}
 	}
 
@@ -222,9 +227,15 @@ public class ModelViewBinder {
 	 * @param action  Action to run
 	 * @param <MODEL> Generic model parameter
 	 */
-	private static <MODEL> void doSyncAction(VaadinSession vaadinSession, Binder<MODEL> binder, BiFunction<Action, MODEL, MODEL> update, Action action) {
+	private static <MODEL> void doSyncAction(VaadinSession vaadinSession, Binder<MODEL> binder, Dispatcher parentDispatcher, BiFunction<Action, MODEL, MODEL> update, Action action) {
 		MODEL oldModel = binder.getBean();
 		MODEL newModel = update.apply(action, oldModel);
+
+		if (action instanceof BroadcastAction) {
+			parentDispatcher.getAllDispatchers().forEach(dispatcher ->
+					dispatcher.accept(action)
+			);
+		}
 
 		vaadinSession.getUIs().forEach(ui ->
 				ui.access(() -> {

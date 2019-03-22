@@ -8,3 +8,11 @@ For an introduction the MVU pattern for Vaadin, see my [vaadin-mvu][https://gith
 ## Example 2: Grid with REST binding
 
 _NOTE_ This example in incomplete!
+
+## Notes
+
+This example uses version 0.2.0
+
+## TODO
+
+[] More documentation on the example
