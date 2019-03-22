@@ -18,6 +18,9 @@ dependencies {
     implementation("com.vaadin:vaadin-server:8.7.1")
     implementation("com.vaadin:vaadin-client-compiled:8.7.1")
     implementation("com.vaadin:vaadin-themes:8.7.1")
+    implementation("com.vaadin:vaadin-push:8.7.1")
     
-    implementation("vaadin-mvu:vaadin-mvu:0.1.0")
+//    implementation("vaadin-mvu:vaadin-mvu:0.1.1")
+    // implementation(fileTree(dir: 'libs', include: ['*.jar'])
+    implementation(files("/src/vaadin/vaadin-mvu/build/libs/vaadin-mvu-0.1.1.jar"))
 }

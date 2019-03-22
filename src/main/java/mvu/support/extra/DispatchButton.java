@@ -1,5 +1,6 @@
 package mvu.support.extra;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -8,7 +9,7 @@ import com.vaadin.ui.Button;
 
 import mvu.support.Action;
 
-public class DispatchButton {
+public class DispatchButton implements Serializable {
 
 	private final Button button;
 
@@ -22,9 +23,12 @@ public class DispatchButton {
 		if (builder.actionSupplier == null) {
 			throw new RuntimeException("An action supplier must be provided for this button to actually do something");
 		}
+
+		Action action = builder.actionSupplier.get();
+
 		button.addClickListener(clickEvent ->
 				builder.dispatcher.forEach(updater ->
-						updater.accept(builder.actionSupplier.get()))
+						updater.accept(action))
 		);
 
 	}
@@ -37,7 +41,7 @@ public class DispatchButton {
 		return new DispatchButton.Builder(button, dispatcher);
 	}
 
-	public static class Builder {
+	public static class Builder implements Serializable {
 
 		private final Button button;
 		private final List<Consumer<Action>> dispatcher;

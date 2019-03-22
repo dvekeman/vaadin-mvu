@@ -1,5 +1,6 @@
 package mvu.support.extra;
 
+import java.io.Serializable;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -9,7 +10,7 @@ import com.vaadin.data.ValueProvider;
 import com.vaadin.ui.Label;
 
 
-public class BoundLabel<MODEL, TYPE> {
+public class BoundLabel<MODEL, TYPE> implements Serializable {
 
 	private final Label label;
 
@@ -20,7 +21,7 @@ public class BoundLabel<MODEL, TYPE> {
 			throw new RuntimeException("Please provide a valueProcessor for this label to actually show something. See `withValueProcessor`");
 		}
 
-		if (builder.valueProvider== null) {
+		if (builder.valueProvider == null) {
 			throw new RuntimeException("Please provide a valueProvider for this label to actually show something. See `withValueProvider`");
 		}
 
@@ -45,7 +46,7 @@ public class BoundLabel<MODEL, TYPE> {
 		return new Builder<>(label, binder, labelTypeClass);
 	}
 
-	public static class Builder<MODEL, TYPE> {
+	public static class Builder<MODEL, TYPE> implements Serializable {
 
 		private final Binder<MODEL> binder;
 		private final Label label;

@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 0.1.3: 
+
+- Support Async actions
+
+## Version 0.1.2: 
+
+- Make bound component wrappers `Serializable` 
+
 ## Version 0.1.1: 
 
 - Composing dispatchers

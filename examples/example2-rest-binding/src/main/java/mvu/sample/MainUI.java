@@ -1,8 +1,10 @@
 package mvu.sample;
 
+import com.vaadin.annotations.Push;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.ui.*;
 
+@Push
 public class MainUI extends com.vaadin.ui.UI {
 	@Override
 	public void init(VaadinRequest request) {

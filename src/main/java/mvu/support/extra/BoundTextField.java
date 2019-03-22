@@ -1,5 +1,6 @@
 package mvu.support.extra;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -10,7 +11,7 @@ import com.vaadin.ui.TextField;
 
 import mvu.support.Action;
 
-public class BoundTextField<MODEL> {
+public class BoundTextField<MODEL> implements Serializable {
 
 	private final TextField textField;
 
@@ -19,7 +20,7 @@ public class BoundTextField<MODEL> {
 		this.textField = builder.wrappedField == null ? new TextField() : builder.wrappedField;
 		Binder<MODEL> binder = builder.binder;
 
-		if(builder.dispatchers == null){
+		if (builder.dispatchers == null) {
 			throw new RuntimeException("Missing dispatchers. See `withDispatchers`");
 		}
 
@@ -40,7 +41,7 @@ public class BoundTextField<MODEL> {
 		return new Builder<>(binder, textField);
 	}
 
-	public static class Builder<MODEL> {
+	public static class Builder<MODEL> implements Serializable {
 
 		private final TextField wrappedField;
 		private final Binder<MODEL> binder;

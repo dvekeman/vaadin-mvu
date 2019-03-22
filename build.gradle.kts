@@ -18,6 +18,7 @@ dependencies {
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     // implementation("com.google.guava:guava:27.0.1-jre")
     implementation("com.vaadin:vaadin-server:8.7.1")
+    implementation("javax.servlet:javax.servlet-api:3.1.0")
 
 }
 
