@@ -1,6 +1,7 @@
 plugins {
-    `war`
+    war
     id("org.gretty") version "2.2.0"
+    kotlin("jvm") version "1.3.21"
 }
 
 repositories {
@@ -18,7 +19,10 @@ dependencies {
     implementation("com.vaadin:vaadin-server:8.7.1")
     implementation("com.vaadin:vaadin-client-compiled:8.7.1")
     implementation("com.vaadin:vaadin-themes:8.7.1")
-    implementation("com.vaadin:vaadin-push:8.7.1")
-    
-    implementation("vaadin-mvu:vaadin-mvu:0.2.0")
+
+    implementation("org.jetbrains.kotlin:kotlin-reflect:1.3.21")
+
+    // implementation("vaadin-mvu:vaadin-mvu:0.3.0")
+    implementation(files("/src/vaadin/vaadin-mvu/build/libs/vaadin-mvu-0.3.0.jar"))
+
 }

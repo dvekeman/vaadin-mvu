@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.3.0: 
+
+- Introduce Kotlin
+
 ## Version 0.2.0: 
 
 - Support Async actions

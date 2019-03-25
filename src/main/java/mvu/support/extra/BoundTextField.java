@@ -29,9 +29,9 @@ public class BoundTextField<MODEL> implements Serializable {
 			Action action = builder.valueConsumer.apply(s);
 			if (action instanceof BroadcastAction) {
 				builder.dispatcher.getAllDispatchers().forEach(dispatcher ->
-						dispatcher.accept(action));
+						dispatcher.invoke(action));
 			} else {
-				builder.dispatcher.getDispatcher().accept(action);
+				builder.dispatcher.getDispatcher().invoke(action);
 			}
 		});
 

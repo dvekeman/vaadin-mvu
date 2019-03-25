@@ -7,7 +7,6 @@ import java.util.function.Supplier;
 import com.vaadin.ui.Button;
 
 import mvu.support.Action;
-import mvu.support.BroadcastAction;
 import mvu.support.Dispatcher;
 
 public class DispatchButton implements Serializable {
@@ -25,15 +24,9 @@ public class DispatchButton implements Serializable {
 			throw new RuntimeException("An action supplier must be provided for this button to actually do something");
 		}
 
-		button.addClickListener(clickEvent -> {
-			Action action = builder.actionSupplier.get();
-			if (action instanceof BroadcastAction) {
-				builder.dispatcher.getAllDispatchers().forEach(dispatcher ->
-						dispatcher.accept(action));
-			} else {
-				builder.dispatcher.getDispatcher().accept(action);
-			}
-		});
+		button.addClickListener(clickEvent ->
+			builder.dispatcher.getDispatcher().invoke((builder.actionSupplier.get()))
+		);
 
 	}
 

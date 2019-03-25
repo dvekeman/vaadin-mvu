@@ -1,7 +1,6 @@
 package mvu.support.template;
 
-import java.util.List;
-import java.util.function.Consumer;
+import static mvu.support.ModelViewBinderKt.bindModelAndView;
 
 import com.vaadin.data.Binder;
 import com.vaadin.ui.Button;
@@ -11,20 +10,15 @@ import com.vaadin.ui.TextField;
 
 import mvu.support.Action;
 import mvu.support.Dispatcher;
-import mvu.support.ModelViewBinder;
 import mvu.support.extra.BoundTextField;
 import mvu.support.extra.DispatchButton;
 
 /**
  * Basic Component template
  */
-class ComponentTemplate {
+class ComponentTemplateJava {
 
-	private ComponentTemplate(){}
-
-	/* ************************************************************************************************************** */
-	/* MODEL
-	/* ************************************************************************************************************** */
+	private ComponentTemplateJava(){}
 
 	static class Model {
 
@@ -69,12 +63,8 @@ class ComponentTemplate {
 
 	}
 
-	/* ************************************************************************************************************** */
-	/* VIEW
-	/* ************************************************************************************************************** */
-
 	static Component view(Dispatcher parentDispatcher) {
-		return ModelViewBinder.bindModelAndView(parentDispatcher, Model.initialModel(), ComponentTemplate::view, ComponentTemplate::update);
+		return bindModelAndView(parentDispatcher, Model.initialModel(), ComponentTemplateJava::view, ComponentTemplateJava::update);
 	}
 
 
@@ -94,11 +84,7 @@ class ComponentTemplate {
 		return layout;
 	}
 
-	/* ************************************************************************************************************** */
-	/* UPDATE
-	/* ************************************************************************************************************** */
-
-	private static class SetValue implements Action {
+	private static class SetValue {
 		final int value;
 
 		SetValue(int value) {
