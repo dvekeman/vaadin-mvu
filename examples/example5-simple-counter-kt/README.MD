@@ -2,7 +2,7 @@
 
 Here is a screenshot to set the scene
 
-![Vaadin MVU Ticker Example](https://github.com/dvekeman/vaadin-mvu/blob/master/examples/example5-simple-counter/doc/img/vaadin-mvu-example5.png)
+![Vaadin MVU Ticker Example](https://github.com/dvekeman/vaadin-mvu/blob/master/examples/example5-simple-counter-kt/doc/img/vaadin-mvu-example5.png)
 
 To get it up and running quickly
 
