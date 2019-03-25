@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.3.1: 
+
+- Kotlin coroutines
+
 ## Version 0.3.0: 
 
 - Introduce Kotlin

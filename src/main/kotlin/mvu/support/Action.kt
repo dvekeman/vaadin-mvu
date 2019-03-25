@@ -57,10 +57,10 @@ class AsyncActionResult<LEFT, RIGHT> internal constructor(private val left: LEFT
 
 }
 
-fun <LEFT, RIGHT> fromLeft(left: LEFT, rightClass: Class<RIGHT>): AsyncActionResult<LEFT, RIGHT> {
+fun <LEFT, RIGHT> fromLeft(left: LEFT): AsyncActionResult<LEFT, RIGHT> {
     return AsyncActionResult(left = left, right = null)
 }
 
-fun <LEFT, RIGHT> fromRight(right: RIGHT, leftClass: Class<LEFT>): AsyncActionResult<LEFT, RIGHT> {
+fun <LEFT, RIGHT> fromRight(right: RIGHT): AsyncActionResult<LEFT, RIGHT> {
     return AsyncActionResult(left = null, right = right)
 }

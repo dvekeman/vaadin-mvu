@@ -6,7 +6,7 @@ import com.vaadin.ui.HorizontalLayout;
 
 import mvu.support.Action;
 import mvu.support.Dispatcher;
-import mvu.support.ModelViewBinder;
+import mvu.support.ModelViewBinderKt;
 
 class Main {
 
@@ -46,7 +46,7 @@ class Main {
 
 	static Component view() {
 		MainModel initialModel = MainModel.builder().build();
-		return ModelViewBinder.bindModelAndView(initialModel, Main::view, Main::update);
+		return ModelViewBinderKt.bindModelAndView(initialModel, Main::view, Main::update);
 	}
 
 	private static Component view(Binder<MainModel> binder, Dispatcher dispatcher) {

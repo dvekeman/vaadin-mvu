@@ -17,7 +17,7 @@ import mvu.sample.model.Person;
 import mvu.support.Action;
 import mvu.support.BroadcastAction;
 import mvu.support.Dispatcher;
-import mvu.support.ModelViewBinder;
+import mvu.support.ModelViewBinderKt;
 import mvu.support.extra.BoundGrid;
 import mvu.support.extra.BoundLabel;
 
@@ -89,7 +89,7 @@ class HerosGrid {
 	/* ************************************************************************************************************** */
 
 	static Component view(Dispatcher mainUpdater) {
-		return ModelViewBinder.bindModelAndViewV2(mainUpdater, Model.initialModel(), HerosGrid::view, HerosGrid::update);
+		return ModelViewBinderKt.bindModelAndView(mainUpdater, Model.initialModel(), HerosGrid::view, HerosGrid::update);
 	}
 
 

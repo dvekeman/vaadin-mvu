@@ -11,7 +11,7 @@ _NOTE_ This example in incomplete!
 
 ## Notes
 
-This example uses version 0.2.0
+This example uses version 0.3.1 which includes support for Kotlin as well as Kotlin Coroutines (for the asynchronous support)
 
 ## TODO
 

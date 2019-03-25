@@ -22,7 +22,9 @@ import com.vaadin.server.VaadinSession
 import com.vaadin.shared.communication.PushMode
 import com.vaadin.ui.Component
 import com.vaadin.ui.PushConfiguration
-import java.util.concurrent.CompletableFuture
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 
 /**
@@ -200,7 +202,7 @@ private fun <MODEL> doSyncOrAsyncAction(
         binder: Binder<MODEL>,
         update: Update<MODEL>,
         parentDispatcher: Dispatcher,
-        action: Action) {
+        action: Action) = runBlocking {
     if (action is AsyncAction<*, *, *>) {
         val pushEnabled = isPushEnabled(vaadinSession)
         if (!pushEnabled) {
@@ -210,19 +212,31 @@ private fun <MODEL> doSyncOrAsyncAction(
         doSyncAction(vaadinSession, binder, parentDispatcher, update, action.startAction as Action)
         // Then run the async task itself
         // TODO: can we use coroutines here?
-        val f: CompletableFuture<AsyncActionResult<out Action, out Action>>  = CompletableFuture.supplyAsync<AsyncActionResult<out Action, out Action>> {
-            action.perform()
+        println("Starting async action on ${Thread.currentThread().id}")
+        GlobalScope.launch {
+            println("Run async action on ${Thread.currentThread().id}")
+            val eitherErrorOrResult: AsyncActionResult<Action, Action> = action.perform()
+            println("Run async action result on ${Thread.currentThread().id}")
+            if (eitherErrorOrResult.isLeft) {
+                doSyncAction(vaadinSession, binder, parentDispatcher, update, eitherErrorOrResult.left())
+            } else {
+                doSyncAction(vaadinSession, binder, parentDispatcher, update, eitherErrorOrResult.right())
+            }
         }
+        println("Continuing after async action on ${Thread.currentThread().id}")
+//        val f: CompletableFuture<AsyncActionResult<out Action, out Action>>  = CompletableFuture.supplyAsync<AsyncActionResult<out Action, out Action>> {
+//            action.perform()
+//        }
         // And run the action through the dispatcher (typically this is *not* a broadcast action so only the owner component should respond to this
         doSyncAction(vaadinSession, binder, parentDispatcher, update, action)
         // When the result comes back execute either the Fail or the Success action
-        f.thenAccept { eitherLeftOrRight: AsyncActionResult<out Action, out Action> ->
-            if (eitherLeftOrRight.isLeft) {
-                doSyncAction(vaadinSession, binder, parentDispatcher, update, eitherLeftOrRight.left())
-            } else {
-                doSyncAction(vaadinSession, binder, parentDispatcher, update, eitherLeftOrRight.right())
-            }
-        }
+//        f.thenAccept { eitherLeftOrRight: AsyncActionResult<out Action, out Action> ->
+//            if (eitherLeftOrRight.isLeft) {
+//                doSyncAction(vaadinSession, binder, parentDispatcher, update, eitherLeftOrRight.left())
+//            } else {
+//                doSyncAction(vaadinSession, binder, parentDispatcher, update, eitherLeftOrRight.right())
+//            }
+//        }
     } else {
         doSyncAction(vaadinSession, binder, parentDispatcher, update, action)
     }

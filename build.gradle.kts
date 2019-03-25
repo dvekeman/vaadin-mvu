@@ -12,12 +12,13 @@ repositories {
 }
 
 group = "vaadin-mvu"
-version = "0.3.0"
+version = "0.3.1"
 
 dependencies {
     implementation("com.vaadin:vaadin-server:8.7.1")
     implementation("javax.servlet:javax.servlet-api:3.1.0")
     implementation(kotlin("stdlib-jdk8"))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.1.1")
 
     testImplementation(kotlin("test"))
     testImplementation("io.mockk:mockk:1.9")

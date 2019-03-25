@@ -29,7 +29,7 @@ Its layout has 5 components
 - A PlusX component
 - A MinusX component
 
-This demostrates how to compose an application out of subcomponents: PlusX and MinusX are themselves MVU components holding their own state and containing their own actions.
+This demonstrates how to compose an application out of subcomponents: PlusX and MinusX are themselves MVU components holding their own state and containing their own actions.
 
 ## Notes
 

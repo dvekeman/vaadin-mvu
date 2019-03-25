@@ -1,5 +1,8 @@
 package mvu.sample;
 
+import static mvu.support.ActionKt.fromLeft;
+import static mvu.support.ActionKt.fromRight;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,7 +27,7 @@ import mvu.support.Action;
 import mvu.support.AsyncAction;
 import mvu.support.AsyncActionResult;
 import mvu.support.Dispatcher;
-import mvu.support.ModelViewBinder;
+import mvu.support.ModelViewBinderKt;
 import mvu.support.extra.BoundTextField;
 import mvu.support.extra.DispatchButton;
 
@@ -85,7 +88,7 @@ class LoadBar {
 	/* ************************************************************************************************************** */
 
 	static Component view(Dispatcher parentDispatcher) {
-		return ModelViewBinder.bindModelAndViewV2(parentDispatcher, Model.initialModel(), LoadBar::view, LoadBar::update);
+		return ModelViewBinderKt.bindModelAndView(parentDispatcher, Model.initialModel(), LoadBar::view, LoadBar::update);
 	}
 
 
@@ -165,11 +168,11 @@ class LoadBar {
 					.map(s -> s.split(" "))
 					.map(personArray -> new Person(personArray[0], personArray[1]))
 					.collect(Collectors.toList());
-			return AsyncActionResult.fromRight(new HerosGrid.HerosLoaded(heros), HerosGrid.LoadError.class);
+			return fromRight(new HerosGrid.HerosLoaded(heros));
 		} catch (Exception e) {
 			e.printStackTrace();
 			String errorMsg = String.join("</br>", getErrorMessages(new ArrayList<>(), e));
-			return AsyncActionResult.fromLeft(new HerosGrid.LoadError(errorMsg), HerosGrid.HerosLoaded.class);
+			return fromLeft(new HerosGrid.LoadError(errorMsg));
 		}
 	}
 
