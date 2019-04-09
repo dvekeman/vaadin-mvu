@@ -278,8 +278,8 @@ This is very incomplete and a few emerging questions | tasks are
 - Add support for more Vaadin components besides labels, textfields and buttons
 - Implement the library in Kotlin (wonder why I didn't do that in the first place...)
 
-## License
+## Feedback
 
-There is obviously no LICENSE for the pattern. If you like or use it, drop me a note or star!
+Questions and feedback welcome!
 
 [1]: https://www.artima.com/intv/bloch13.html
